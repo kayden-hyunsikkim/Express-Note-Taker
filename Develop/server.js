@@ -22,49 +22,59 @@ app.get('/notes', (req, res) =>
     res.sendFile(path.join(__dirname, 'public/notes.html'))
 );
 
-app.get('/api/notes', (req, res) => res.json(dbdata));
+app.get('/api/notes', (req, res) => {
+    try {
+        const dbdata = fs.readFileSync('./db/db.json', 'utf-8')
+        const parseddata = JSON.parse(dbdata);
+        res.json(parseddata);
+    } catch (err) {
+        console.log(err);
+        res.json({msg: err});
+    }
+});
 
 app.post('/api/notes', (req, res) => {
     console.info(`${req.method} request received to add a review`);
 
     const { title, text } = req.body;
 
-  // If all the required properties are present
-  if (title && text) {
-    // Variable for the object we will save
-    const newtodo = {
-      title,
-      text,
-    };
-    fs.readFile('./db/db.json', 'utf8', (err, data) => {
-        if (err) {
-          console.error(err);
-        } else {
-          // Convert string into JSON object
-          const parsedReviews = JSON.parse(data);
-  
-          // Add a new review
-          parsedReviews.push(newtodo);
-          fs.writeFile(
-            './db/db.json',
-            JSON.stringify(parsedReviews, null, 4),
-            (writeErr) =>
-              writeErr
-                ? console.error(writeErr)
-                : console.info('Successfully updated todolist!')
-          );
-        }
-      });
-    
+    // If all the required properties are present
+    if (title && text) {
+        // Variable for the object we will save
+        const newtodo = {
+            title,
+            text,
+        };
+        fs.readFile('./db/db.json', 'utf8', (err, data) => {
+            if (err) {
+                console.error(err);
+            } else {
+                // Convert string into JSON object
+                const parsedReviews = JSON.parse(data);
 
-    const response = {
-      status: 'success',
-      body: req.body,
-    };
+                // Add a new review
+                parsedReviews.push(newtodo);
+                fs.writeFile(
+                    './db/db.json',
+                    JSON.stringify(parsedReviews, null, 4),
+                    (writeErr) =>
+                        writeErr
+                            ? console.error(writeErr)
+                            : console.info('Successfully updated todolist!')
+                );
+            }
+        });
 
-    console.log(response);
-    res.status(201).json(response);
-  }});
+
+        const response = {
+            status: 'success',
+            body: req.body,
+        };
+
+        console.log(response);
+        res.status(201).json(response);
+    }
+});
 
 
 app.listen(PORT, () =>
