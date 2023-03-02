@@ -99,6 +99,9 @@ const handleNoteDelete = (e) => {
 const handleNoteView = (e) => {
   e.preventDefault();
   activeNote = JSON.parse(e.target.parentElement.getAttribute('data-note'));
+  noteTitle.innerHTML = activeNote.title;
+  noteTitle.setAttribute('placeholder',activeNote.title);
+  noteText.setAttribute('placeholder',activeNote.text);
   renderActiveNote();
 };
 
@@ -167,7 +170,7 @@ const renderNoteList = async (notes) => {
 
   if (window.location.pathname === '/notes') {
     noteListItems.forEach((note) => noteList[0].append(note));
-  }
+  }noteTitle
 };
 
 // Gets notes from the db and renders them to the sidebar
@@ -182,3 +185,13 @@ if (window.location.pathname === '/notes') {
 
 getAndRenderNotes();
 
+
+
+newNoteBtn.addEventListener('click', clicknewBtn);
+
+
+//initialing text input and textarea when user click '+' button on nav bar 
+function clicknewBtn() {
+  noteTitle.setAttribute('placeholder','Note Title');
+  noteText.setAttribute('placeholder','Note Text');
+}
